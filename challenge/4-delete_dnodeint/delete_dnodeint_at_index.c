@@ -2,47 +2,54 @@
 #include <stdlib.h>
 
 /**
- * delete_dnodeint_at_index - Supprime un nœud à un index donné d'une liste doublement chaînée
- * @head: Double pointeur vers la tête de la liste
- * @index: Index du nœud à supprimer
+ * delete_dnodeint_at_index - Delete a node at a specific index from a list
  *
- * Return: 1 en cas de succès, -1 en cas d'échec
+ * @head: A pointer to the first element of a list
+ * @index: The index of the node to delete
+ *
+ * Return: 1 on success, -1 on failure
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-    dlistint_t *current;
-    unsigned int i;
+	dlistint_t *saved_head;
+	dlistint_t *tmp;
+	unsigned int p;
 
-    if (head == NULL || *head == NULL)
-        return (-1);
-
-    current = *head;
-
-    /* Si on supprime le premier nœud */
-    if (index == 0)
-    {
-        *head = current->next;
-        if (*head != NULL)
-            (*head)->prev = NULL;
-        free(current);
-        return (1);
-    }
-
-    /* Parcours jusqu'à l'index */
-    for (i = 0; current != NULL && i < index; i++)
-        current = current->next;
-
-    /* Si l'index est invalide */
-    if (current == NULL)
-        return (-1);
-
-    /* Mise à jour des liens */
-    if (current->next != NULL)
-        current->next->prev = current->prev;
-
-    if (current->prev != NULL)
-        current->prev->next = current->next;
-
-    free(current);
-    return (1);
+	if (*head == NULL)
+	{
+		return (-1);
+	}
+	saved_head = *head;
+	p = 0;
+	/** pour attendre le noeud a l'index*/
+	while (p < index && *head != NULL)
+	{
+		*head = (*head)->next;
+		p++;
+	}
+	/** */
+	if (p != index)
+	{
+		*head = saved_head;
+		return (-1);
+	}
+	if (0 == index)
+	{
+		tmp = (*head)->next;
+		free(*head);
+		*head = tmp;
+		if (tmp != NULL)
+		{
+			tmp->prev = NULL;
+		}
+	}
+	else
+	{
+		(*head)->prev->next = (*head)->next;
+		free(*head);
+		if ((*head)->next)
+			(*head)->next->prev = (*head)->prev;
+		*head = saved_head;
+	}
+	return (1);
 }
